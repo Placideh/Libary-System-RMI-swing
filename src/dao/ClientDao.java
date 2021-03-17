@@ -5,10 +5,8 @@
  */
 package dao;
 
-import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.ImageIcon;
 import model.Client;
 import model.ClientCategory;
 import org.hibernate.HibernateException;
@@ -17,8 +15,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import java.sql.*;
-import sun.awt.X11.XAtom;
 
 /**
  *

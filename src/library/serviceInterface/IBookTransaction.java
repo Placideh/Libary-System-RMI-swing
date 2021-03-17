@@ -4,11 +4,24 @@
  * and open the template in the editor.
  */
 package library.serviceInterface;
-
+import java.rmi.*;
+import java.util.List;
+import model.BookTransaction;
+import model.TransactionType;
 /**
  *
  * @author placideh
  */
-public interface IBookTransaction {
+public interface IBookTransaction extends Remote {
+    void save(BookTransaction book) throws RemoteException;
+    void update(BookTransaction book) throws RemoteException;
+    void delete(BookTransaction book) throws RemoteException;
+    List<BookTransaction> bookTransactionInTable() throws RemoteException;
+    List<TransactionType> transactionTypeInTable() throws RemoteException;
+    List<String>getFirstNamesInCombo() throws RemoteException;
+    List<String> getLastNameInCombo() throws RemoteException;
+    List<String>getBookNameInCombo() throws RemoteException;
+    
+    
     
 }

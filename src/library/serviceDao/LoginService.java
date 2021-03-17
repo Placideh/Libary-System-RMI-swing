@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package library.serviceInterface;
+package library.serviceDao;
 
 /**
  *
  * @author placideh
  */
-public interface IClientCategory {
+public class LoginService {
     
 }

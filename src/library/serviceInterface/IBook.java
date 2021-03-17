@@ -4,11 +4,18 @@
  * and open the template in the editor.
  */
 package library.serviceInterface;
-
+import java.rmi.*;
+import java.util.List;
+import model.Book;
 /**
  *
  * @author placideh
  */
-public interface IBook {
+public interface IBook extends Remote {
+    void save(Book book) throws RemoteException;
+    List<Book>booksInTable() throws RemoteException;
+    void update(Book book) throws RemoteException;
+    void delete(String id) throws RemoteException;
+    
     
 }
