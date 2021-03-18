@@ -61,7 +61,7 @@ public class BookTransactionService extends UnicastRemoteObject implements IBook
     }
 
     @Override
-    public List<TransactionType> transactionTypeInTable() throws RemoteException {
+    public List<TransactionType> transactionTypeInCombo() throws RemoteException {
         List<TransactionType> list=null;
         try {
             list=dao.getTransactionTypeIntoCombo();

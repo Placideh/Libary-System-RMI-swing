@@ -17,7 +17,7 @@ public interface IBookTransaction extends Remote {
     void update(BookTransaction book) throws RemoteException;
     void delete(BookTransaction book) throws RemoteException;
     List<BookTransaction> bookTransactionInTable() throws RemoteException;
-    List<TransactionType> transactionTypeInTable() throws RemoteException;
+    List<TransactionType> transactionTypeInCombo() throws RemoteException;
     List<String>getFirstNamesInCombo() throws RemoteException;
     List<String> getLastNameInCombo() throws RemoteException;
     List<String>getBookNameInCombo() throws RemoteException;

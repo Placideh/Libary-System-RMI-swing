@@ -5,7 +5,6 @@
  */
 package internalFrames;
 
-import dao.ClientDao;
 import java.awt.Image;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -13,12 +12,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,6 +24,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import library.serviceInterface.IClient;
 import model.Client;
 import model.ClientCategory;
 import org.hibernate.Query;
@@ -40,7 +38,6 @@ import org.hibernate.cfg.Configuration;
  * @author placideh
  */
 public class ClientForm extends javax.swing.JInternalFrame {
-    ClientDao clDao=new ClientDao();
     static ClientCategory clCategory;
     byte[] data;
     DefaultTableModel model;
@@ -278,55 +275,73 @@ public class ClientForm extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         //calling client dao for storing our data
         
-        String regID=jTextField1.getText().trim();
-        String firstName=jTextField2.getText().trim();
-        String lastName=jTextField3.getText().trim();
-        String phoneNumber=jTextField4.getText().trim();
-        String email=jTextField5.getText().trim();
-        ClientDao cDao=new ClientDao();
-        clCategory=(ClientCategory)jComboBox1.getModel().getSelectedItem();
-        Client client=new Client(regID, firstName, lastName, phoneNumber, email, clCategory.toString(), data);
-        cDao.saveClient(client);
-        JOptionPane.showMessageDialog(null,"Client Inserted");
-        clearTable();
-        allClients();
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
-        jTextField4.setText("");
-        jTextField5.setText("");
-        jLabel8.setName("Image Saved!");
-        
+        try {
+            String regID=jTextField1.getText().trim();
+            String firstName=jTextField2.getText().trim();
+            String lastName=jTextField3.getText().trim();
+            String phoneNumber=jTextField4.getText().trim();
+            String email=jTextField5.getText().trim();
+            clCategory=(ClientCategory)jComboBox1.getModel().getSelectedItem();
+            Registry registry=LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IClient clientService=(IClient) registry.lookup("clientService");
+            
+            Client client=new Client(regID, firstName, lastName, phoneNumber, email, clCategory.toString(), data);
+            clientService.save(client);
+            JOptionPane.showMessageDialog(null,"Client Inserted");
+            
+            clearTable();
+            allClients();
+            jTextField1.setText("");
+            jTextField2.setText("");
+            jTextField3.setText("");
+            jTextField4.setText("");
+            jTextField5.setText("");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         // TODO add your handling code here:
-        int selectedIndex = jTable1.getSelectedRow();
-//        ADDING SELECTED ROW FROM JTABLE INTO RESPECTIVE TEXTFIELDS
-        jTextField1.setText(model.getValueAt(selectedIndex, 0) + "");
-        jTextField2.setText(model.getValueAt(selectedIndex, 2) + "");
-        jTextField3.setText(model.getValueAt(selectedIndex, 3) + "");
-        jTextField4.setText(model.getValueAt(selectedIndex, 4) + "");
-        jTextField5.setText(model.getValueAt(selectedIndex, 5) + "");
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{(String) model.getValueAt(selectedIndex, 1)}));
-        jTextField1.requestFocusInWindow();
-        String image=jTextField1.getText().trim();
-        data=clDao.getImage(image);
+        try {
+            Registry registry =LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IClient clientService=(IClient) registry.lookup("clientService");
+            int selectedIndex = jTable1.getSelectedRow();
+    //        ADDING SELECTED ROW FROM JTABLE INTO RESPECTIVE TEXTFIELDS
+            jTextField1.setText(model.getValueAt(selectedIndex, 0) + "");
+            jTextField2.setText(model.getValueAt(selectedIndex, 2) + "");
+            jTextField3.setText(model.getValueAt(selectedIndex, 3) + "");
+            jTextField4.setText(model.getValueAt(selectedIndex, 4) + "");
+            jTextField5.setText(model.getValueAt(selectedIndex, 5) + "");
+            jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{(String) model.getValueAt(selectedIndex, 1)}));
+            jTextField1.requestFocusInWindow();
+            String image=jTextField1.getText().trim();
+            data=clientService.getImage(image);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }//GEN-LAST:event_jTable1MouseClicked
     
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-       String id=jTextField1.getText();
-        clDao.deleteClient(id);
-        JOptionPane.showMessageDialog(null,"Client Removed!");
-        clearTable();
-        allClients();
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
-        jTextField4.setText("");
-        jTextField5.setText("");
+        try {
+             String id=jTextField1.getText();
+            Registry registry = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IClient clientService = (IClient) registry.lookup("clientService");
+            clientService.delete(id);
+            JOptionPane.showMessageDialog(null,"Client Removed!");
+            clearTable();
+            allClients();
+            jTextField1.setText("");
+            jTextField2.setText("");
+            jTextField3.setText("");
+            jTextField4.setText("");
+            jTextField5.setText("");
+        } catch (NotBoundException | RemoteException ex) {
+            ex.printStackTrace();
+        }
 
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -334,23 +349,33 @@ public class ClientForm extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         //calling client dao for storing our data
 
-        String regID =jTextField1.getText().trim();
-        String firstName = jTextField2.getText().trim();
-        String lastName = jTextField3.getText().trim();
-        String phoneNumber = jTextField4.getText().trim();
-        String email = jTextField5.getText().trim();
-        ClientDao cDao = new ClientDao();
-        String clientCategory=(String)jComboBox1.getModel().getSelectedItem();
-        Client client = new Client(regID, firstName, lastName, phoneNumber, email, clientCategory,data);
-        cDao.updateClient(client);
-        JOptionPane.showMessageDialog(null, "Client Modified!!");
-        clearTable();
-        allClients();
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
-        jTextField4.setText("");
-        jTextField5.setText("");
+        try {
+            String regID =jTextField1.getText().trim();
+            String firstName = jTextField2.getText().trim();
+            String lastName = jTextField3.getText().trim();
+            String phoneNumber = jTextField4.getText().trim();
+            String email = jTextField5.getText().trim();
+            
+            Registry registry = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IClient clientService = (IClient) registry.lookup("clientService");
+            
+            String clientCategory=(String)jComboBox1.getModel().getSelectedItem();
+            Client client = new Client(regID, firstName, lastName, phoneNumber, email, clientCategory,data);
+            clientService.update(client);
+            JOptionPane.showMessageDialog(null, "Client Modified!!");
+            clearTable();
+            allClients();
+            jTextField1.setText("");
+            jTextField2.setText("");
+            jTextField3.setText("");
+            jTextField4.setText("");
+            jTextField5.setText("");
+           
+           
+            
+        } catch (NotBoundException | RemoteException ex) {
+            ex.printStackTrace();
+        }
         
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -373,15 +398,22 @@ public class ClientForm extends javax.swing.JInternalFrame {
         
     }//GEN-LAST:event_jButton5ActionPerformed
    public void allClients(){
-       List<Client> clients=clDao.getClientIntoTable();
-        for(Client client:clients){
-            model.insertRow(model.getRowCount(), new Object[]{
-                client.getRegId(),client.getClientCategory(),
-                client.getFirstName(),client.getLastName(),
-                client.getPhoneNumber(),client.getEmail(),client.getPhoto()
+        try {
             
-            });
-        }
+           Registry registry=LocateRegistry.getRegistry("127.0.0.1",21172);
+           IClient clientService=(IClient)registry.lookup("clientService");
+           List<Client> clients=clientService.clientInTable();
+            for(Client client:clients){
+                model.insertRow(model.getRowCount(), new Object[]{
+                    client.getRegId(),client.getClientCategory(),
+                    client.getFirstName(),client.getLastName(),
+                    client.getPhoneNumber(),client.getEmail(),client.getPhoto()
+
+                });
+            }
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
       
    }
     public void clearTable() {
@@ -391,8 +423,14 @@ public class ClientForm extends javax.swing.JInternalFrame {
     }
 
     public void populateCombo() {
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(clDao.getClientCategory().toArray()));
+        try {
+            Registry registry=LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IClient clientService=(IClient) registry.lookup("clientService");
+            jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(clientService.getClientCategory().toArray()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+   
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

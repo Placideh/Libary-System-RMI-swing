@@ -6,11 +6,14 @@
 package internalFrames;
 
 import dao.BookTransactionDao;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.time.LocalDate;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import library.serviceInterface.IBookTransaction;
 import model.BookTransaction;
 import model.TransactionType;
 
@@ -39,60 +42,80 @@ public class BookTransactForm extends javax.swing.JInternalFrame {
         
     }
     public void saveBookTransaction(){
-       
-        //ASSIGNING THE TRANSACTION.VALUE TO TRANSACTION OBJECT
-         transtype=(TransactionType)jComboBox1.getSelectedItem();
-        //ASSIGNING CLIENTS NAMES TO CLIENT OBJECT
-        String firstName=(String)jComboBox2.getSelectedItem();
-        String lastName=(String)jComboBox4.getSelectedItem();
-           
-        //ASSIGNING BOOK NAME TO BOOK OBJECT
-        String bookName=(String)jComboBox3.getSelectedItem();
-        
-        //GETTING CURRENT TIME AUTOMATIC
-        LocalDate transactionDate = LocalDate.now();
-        LocalDate returnDate=LocalDate.MIN;
+        try {
+            Registry register=LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookTransaction bookTransactionService=(IBookTransaction)register.lookup("bookTransactionService");
+            //ASSIGNING THE TRANSACTION.VALUE TO TRANSACTION OBJECT
+             transtype=(TransactionType)jComboBox1.getSelectedItem();
+            //ASSIGNING CLIENTS NAMES TO CLIENT OBJECT
+            String firstName=(String)jComboBox2.getSelectedItem();
+            String lastName=(String)jComboBox4.getSelectedItem();
 
-        BookTransaction bookTrans=new BookTransaction(firstName, lastName, bookName, transtype.toString(), transactionDate, returnDate);
-        bookTransactionDao.saveTransaction(bookTrans);
-        JOptionPane.showMessageDialog(null,"book borrowed !!");
-        clearTable();
-        showBookTransaction();
+            //ASSIGNING BOOK NAME TO BOOK OBJECT
+            String bookName=(String)jComboBox3.getSelectedItem();
+
+            //GETTING CURRENT TIME AUTOMATIC
+            LocalDate transactionDate = LocalDate.now();
+            LocalDate returnDate=LocalDate.MIN;
+
+            BookTransaction bookTrans=new BookTransaction(firstName, lastName, bookName, transtype.toString(), transactionDate, returnDate);
+            bookTransactionService.save(bookTrans);
+            JOptionPane.showMessageDialog(null,"book borrowed !!");
+            clearTable();
+            showBookTransaction();
+            
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         
         
     }
     public void updateBookTransaction(){
-       
-        //ASSIGNING THE TRANSACTION.VALUE TO TRANSACTION OBJECT
-         transtype=(TransactionType)jComboBox1.getSelectedItem();
-        //ASSIGNING CLIENTS NAMES TO CLIENT OBJECT
-        String firstName=(String)jComboBox2.getSelectedItem();
-        String lastName=(String)jComboBox4.getSelectedItem();
-           
-        //ASSIGNING BOOK NAME TO BOOK OBJECT
-        String bookName=(String)jComboBox3.getSelectedItem();
-        
-        //GETTING CURRENT TIME AUTOMATIC
-        LocalDate transactionDate = LocalDate.now();
-        LocalDate returnDate=LocalDate.now();
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookTransaction bookTransactionService = (IBookTransaction) register.lookup("bookTransactionService");
+            //ASSIGNING THE TRANSACTION.VALUE TO TRANSACTION OBJECT
+             transtype=(TransactionType)jComboBox1.getSelectedItem();
+            //ASSIGNING CLIENTS NAMES TO CLIENT OBJECT
+            String firstName=(String)jComboBox2.getSelectedItem();
+            String lastName=(String)jComboBox4.getSelectedItem();
 
-        BookTransaction bookTrans=new BookTransaction(firstName, lastName, bookName, transtype.toString(), transactionDate, returnDate);
-        bookTransactionDao.saveTransaction(bookTrans);
-        JOptionPane.showMessageDialog(null,"book returned !!");
-        clearTable();
-        showBookTransaction();
+            //ASSIGNING BOOK NAME TO BOOK OBJECT
+            String bookName=(String)jComboBox3.getSelectedItem();
+
+            //GETTING CURRENT TIME AUTOMATIC
+            LocalDate transactionDate = LocalDate.now();
+            LocalDate returnDate=LocalDate.now();
+
+            BookTransaction bookTrans=new BookTransaction(firstName, lastName, bookName, transtype.toString(), transactionDate, returnDate);
+            bookTransactionService.save(bookTrans);
+            JOptionPane.showMessageDialog(null,"book returned !!");
+            clearTable();
+            showBookTransaction();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         
         
     }
     public void showBookTransaction(){
-        List<BookTransaction> books = bookTransactionDao.getBookTransIntoTable();
-        for (BookTransaction book : books) {
-            model.insertRow(model.getRowCount(), new Object[]{
-               book.getFirstName(),book.getLastName(),
-               book.getBookName(),book.getTransType(),
-               book.getTransactionDate(),book.getReturnDate()
+        try {
+            Registry register=LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookTransaction bookTransactionService=(IBookTransaction)register.lookup("bookTransactionService");
+            List<BookTransaction> books = bookTransactionService.bookTransactionInTable();
+            for (BookTransaction book : books) {
+                model.insertRow(model.getRowCount(), new Object[]{
+                   book.getFirstName(),book.getLastName(),
+                   book.getBookName(),book.getTransType(),
+                   book.getTransactionDate(),book.getReturnDate()
 
-            });
+                });
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     public void clearTable(){
@@ -101,7 +124,14 @@ public class BookTransactForm extends javax.swing.JInternalFrame {
         }
     }
     public void populateTransTypeCombo(){
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(bookTransactionDao.getTransactionTypeIntoCombo().toArray()));
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookTransaction bookTransactionService = (IBookTransaction) register.lookup("bookTransactionService");
+            jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(bookTransactionService.transactionTypeInCombo().toArray()));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public void populateFirstNameCombo(){
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(bookTransactionDao.getFirstNameInCombo().toArray()));
