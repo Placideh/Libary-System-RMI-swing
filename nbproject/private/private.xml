@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/library/serviceInterface/ILogin.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/library/serviceDao/ClientService.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/library/serviceDao/BookTransactionService.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/dao/BookTransactionDao.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/library/serviceInterface/ISearchBook.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/dao/ClientDao.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/dao/BookCategoryDao.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/dao/SearchBookDao.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/library/serviceInterface/IBookTransaction.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/library/serviceDao/BookCategoryService.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/library/serviceInterface/IBookCategory.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/library/serviceInterface/IBook.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/library/serviceDao/BookService.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/library/serviceDao/SearchBookService.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/library/serviceDao/LoginService.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/dao/LoginDao.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/dao/BookDao.java</file>
+            <file>file:/home/placideh/NetBeansProjects/SystemLibaryRMI/src/library/serviceInterface/IClient.java</file>
+        </group>
+    </open-files>
+</project-private>
