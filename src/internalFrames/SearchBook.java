@@ -9,17 +9,20 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import dao.BookTransactionDao;
 import dao.SearchBookDao;
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import library.serviceInterface.IBookTransaction;
+import library.serviceInterface.ISearchBook;
 import model.BookTransaction;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -31,7 +34,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @author placideh
  */
 public class SearchBook extends javax.swing.JInternalFrame {
-        BookTransactionDao bookTransactionDao=new BookTransactionDao();
         DefaultTableModel model;
         SearchBookDao sDao=new SearchBookDao();
 
@@ -46,89 +48,130 @@ public class SearchBook extends javax.swing.JInternalFrame {
         allSearchedBooks();
     }
     public void showClientId(int id ){
-        List<BookTransaction> books =sDao.getById(id);
-        for (BookTransaction book : books) {
-            model.insertRow(model.getRowCount(), new Object[]{
-                book.getbTansId(),
-                book.getFirstName(),
-                book.getBookName(),
-                book.getTransactionDate(), book.getReturnDate(),
-                 book.getTransType()    
+        try {
+            Registry register=LocateRegistry.getRegistry("127.0.0.1", 21172);
+            ISearchBook searchBookService=(ISearchBook) register.lookup("searchBookService");
+            List<BookTransaction> books =searchBookService.getById(id);
+            for (BookTransaction book : books) {
+                model.insertRow(model.getRowCount(), new Object[]{
+                    book.getbTansId(),
+                    book.getFirstName(),
+                    book.getBookName(),
+                    book.getTransactionDate(), book.getReturnDate(),
+                     book.getTransType()    
 
-            });
+                });
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         
         
     }
     public void showClientName(String name){
-        List<BookTransaction> books = sDao.getByClientName(name);
-        for (BookTransaction book : books) {
-            model.insertRow(model.getRowCount(), new Object[]{
-                book.getbTansId(),
-                book.getFirstName(),
-                book.getBookName(), 
-                book.getTransactionDate(), book.getReturnDate(),
-                book.getTransType()
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            ISearchBook searchBookService = (ISearchBook) register.lookup("searchBookService");
+            List<BookTransaction> books = searchBookService.getByClientName(name);
+            for (BookTransaction book : books) {
+                model.insertRow(model.getRowCount(), new Object[]{
+                    book.getbTansId(),
+                    book.getFirstName(),
+                    book.getBookName(), 
+                    book.getTransactionDate(), book.getReturnDate(),
+                    book.getTransType()
 
-            });
+                });
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
     public void showBook(String name){
-        List<BookTransaction> books = sDao.getByName(name);
-        for (BookTransaction book : books) {
-            model.insertRow(model.getRowCount(), new Object[]{
-                book.getbTansId(),
-                book.getFirstName(),
-                book.getBookName(),
-                book.getTransactionDate(), book.getReturnDate(),
-                book.getTransType()
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            ISearchBook searchBookService = (ISearchBook) register.lookup("searchBookService");
+            List<BookTransaction> books = searchBookService.getByName(name);
+            for (BookTransaction book : books) {
+                model.insertRow(model.getRowCount(), new Object[]{
+                    book.getbTansId(),
+                    book.getFirstName(),
+                    book.getBookName(),
+                    book.getTransactionDate(), book.getReturnDate(),
+                    book.getTransType()
 
-            });
+                });
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
    
     public void showDateTrans(String date){
-        List<BookTransaction> books = sDao.getByDateTrans(date);
-        for (BookTransaction book : books) {
-            model.insertRow(model.getRowCount(), new Object[]{
-                book.getbTansId(),
-                book.getFirstName(),
-                book.getBookName(),
-                book.getTransactionDate(), book.getReturnDate(),
-                book.getTransType()
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            ISearchBook searchBookService = (ISearchBook) register.lookup("searchBookService");
+            List<BookTransaction> books = searchBookService.getByDateTrans(date);
+            for (BookTransaction book : books) {
+                model.insertRow(model.getRowCount(), new Object[]{
+                    book.getbTansId(),
+                    book.getFirstName(),
+                    book.getBookName(),
+                    book.getTransactionDate(), book.getReturnDate(),
+                    book.getTransType()
 
-            });
+                });
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         
         
     }
     public void showReturnDateTrans(String date){
-        List<BookTransaction> books = sDao.getByReturnedDate(date);
-        for (BookTransaction book : books) {
-            model.insertRow(model.getRowCount(), new Object[]{
-                book.getbTansId(),
-                book.getFirstName(),
-                book.getBookName(),
-                book.getTransactionDate(), book.getReturnDate(),
-                book.getTransType()
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            ISearchBook searchBookService = (ISearchBook) register.lookup("searchBookService");
+            List<BookTransaction> books = searchBookService.getByReturnDateTrans(date);
+            for (BookTransaction book : books) {
+                model.insertRow(model.getRowCount(), new Object[]{
+                    book.getbTansId(),
+                    book.getFirstName(),
+                    book.getBookName(),
+                    book.getTransactionDate(), book.getReturnDate(),
+                    book.getTransType()
 
-            });
+                });
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         
         
     }
     public void allSearchedBooks(){
-        List<BookTransaction> books = bookTransactionDao.getBookTransIntoTable();
-        for (BookTransaction book : books) {
-            model.insertRow(model.getRowCount(), new Object[]{
-                book.getbTansId(),
-                book.getFirstName(),
-                book.getBookName(), 
-                book.getTransactionDate(), book.getReturnDate(),
-                book.getTransType()
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookTransaction bookTransactionService = (IBookTransaction) register.lookup("bookTransactionService");
+            List<BookTransaction> books = bookTransactionService.bookTransactionInTable();
+            for (BookTransaction book : books) {
+                model.insertRow(model.getRowCount(), new Object[]{
+                    book.getbTansId(),
+                    book.getFirstName(),
+                    book.getBookName(), 
+                    book.getTransactionDate(), book.getReturnDate(),
+                    book.getTransType()
 
-            });
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }

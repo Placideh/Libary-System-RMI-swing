@@ -5,13 +5,15 @@
  */
 package internalFrames;
 
-import dao.BookCategoryDao;
-import dao.BookDao;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.time.LocalDate;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import library.serviceInterface.IBook;
+import library.serviceInterface.IBookCategory;
 import model.Book;
 import model.BookCategory;
 
@@ -21,8 +23,6 @@ import model.BookCategory;
  */
 public class BookTabbedPane extends javax.swing.JInternalFrame {
 
-    BookDao bDao = new BookDao();
-    BookCategoryDao bCateDao = new BookCategoryDao();
     DefaultTableModel model;
     DefaultTableModel model2;
     DefaultComboBoxModel comboModel;
@@ -43,76 +43,103 @@ public class BookTabbedPane extends javax.swing.JInternalFrame {
     }
 
     public void saveBook() {
-        String bookId =jTextField1.getText().trim();
-        String title = jTextField2.getText().trim();
-        String author = jTextField3.getText().trim();
-        String publishingHouse = jTextField4.getText().trim();
-        LocalDate publicationDate = LocalDate.now();
-        jTextField5.setText(publicationDate.toString());
-        int pages = Integer.parseInt(jTextField6.getText().trim());
-        boolean available = Boolean.parseBoolean(jTextField7.getText().trim());
-        String name=(String)jComboBox1.getSelectedItem();
-        Book book=new Book(bookId, title, author, publishingHouse, publicationDate, pages, available, name);
-        bDao.saveBook(book);
-        JOptionPane.showMessageDialog(null, "book inserted ");
-        clearBookTable();
-        allBooks();
+        try {
+            Registry register=LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBook bookService=(IBook)register.lookup("bookService");
+            String bookId =jTextField1.getText().trim();
+            String title = jTextField2.getText().trim();
+            String author = jTextField3.getText().trim();
+            String publishingHouse = jTextField4.getText().trim();
+            LocalDate publicationDate = LocalDate.now();
+            jTextField5.setText(publicationDate.toString());
+            int pages = Integer.parseInt(jTextField6.getText().trim());
+            boolean available = Boolean.parseBoolean(jTextField7.getText().trim());
+            String name=(String)jComboBox1.getSelectedItem();
+            Book book=new Book(bookId, title, author, publishingHouse, publicationDate, pages, available, name);
+            bookService.save(book);
+            JOptionPane.showMessageDialog(null, "book inserted ");
+            clearBookTable();
+            allBooks();
 
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
-        jTextField4.setText("");
-        jTextField5.setText("");
-        jTextField6.setText("");
-        jTextField7.setText("");
+            jTextField1.setText("");
+            jTextField2.setText("");
+            jTextField3.setText("");
+            jTextField4.setText("");
+            jTextField5.setText("");
+            jTextField6.setText("");
+            jTextField7.setText("");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public void updateBook(){
-        String bookId = jTextField1.getText().trim();
-        String title = jTextField2.getText().trim();
-        String author = jTextField3.getText().trim();
-        String publishingHouse = jTextField4.getText().trim();
-        LocalDate publicationDate = LocalDate.now();
-        jTextField5.setText(publicationDate.toString());
-        int pages = Integer.parseInt(jTextField6.getText().trim());
-        boolean available = Boolean.parseBoolean(jTextField7.getText().trim());
-        String code = (String) jComboBox1.getSelectedItem();
-        Book book = new Book(bookId, title, author, publishingHouse, publicationDate, pages, available, code);
-        bDao.updateBook(book);
-        JOptionPane.showMessageDialog(null,"book updated");
-        clearBookTable();
-        allBooks();
-        
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
-        jTextField4.setText("");
-        jTextField5.setText("");
-        jTextField6.setText("");
-        jTextField7.setText("");
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBook bookService = (IBook) register.lookup("bookService");
+            String bookId = jTextField1.getText().trim();
+            String title = jTextField2.getText().trim();
+            String author = jTextField3.getText().trim();
+            String publishingHouse = jTextField4.getText().trim();
+            LocalDate publicationDate = LocalDate.now();
+            jTextField5.setText(publicationDate.toString());
+            int pages = Integer.parseInt(jTextField6.getText().trim());
+            boolean available = Boolean.parseBoolean(jTextField7.getText().trim());
+            String code = (String) jComboBox1.getSelectedItem();
+            Book book = new Book(bookId, title, author, publishingHouse, publicationDate, pages, available, code);
+            bookService.update(book);
+            JOptionPane.showMessageDialog(null,"book updated");
+            clearBookTable();
+            allBooks();
+
+            jTextField1.setText("");
+            jTextField2.setText("");
+            jTextField3.setText("");
+            jTextField4.setText("");
+            jTextField5.setText("");
+            jTextField6.setText("");
+            jTextField7.setText("");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
     public void allBooks() {
-           List<Book> books = bDao.getBookIntoTable();
-        for (Book book : books) {
-            model.insertRow(model.getRowCount(), new Object[]{
-               book.getBookId(),book.getPublishingHouse(),
-               book.isAvailable(),book.getTitle(),
-               book.getPublicationDate(),book.getAuthor(),
-               book.getPages(),book.getBookCategory()
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBook bookService = (IBook) register.lookup("bookService");
+               List<Book> books = bookService.booksInTable();
+            for (Book book : books) {
+                model.insertRow(model.getRowCount(), new Object[]{
+                   book.getBookId(),book.getPublishingHouse(),
+                   book.isAvailable(),book.getTitle(),
+                   book.getPublicationDate(),book.getAuthor(),
+                   book.getPages(),book.getBookCategory()
 
-            });
+                });
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     
 
     public void allBooksCAtegory() {
-        List<BookCategory> booksCat=bCateDao.getBookIntoTable();
-        for (BookCategory book : booksCat) {
-            model2.insertRow(model2.getRowCount(), new Object[]{
-                book.getCode(),book.getName()
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookCategory bookCategoryService = (IBookCategory) register.lookup("bookCategoryService");
+            List<BookCategory> booksCat=bookCategoryService.bookCategoryInTable();
+            for (BookCategory book : booksCat) {
+                model2.insertRow(model2.getRowCount(), new Object[]{
+                    book.getCode(),book.getName()
+
+                });
+            }
             
-            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     public void clearBookTable(){
@@ -127,36 +154,57 @@ public class BookTabbedPane extends javax.swing.JInternalFrame {
         }
     }
     public void populateCombo(){
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(bCateDao.getBookCatIntoCombo().toArray()));
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookCategory bookCategoryService = (IBookCategory) register.lookup("bookCategoryService");
+            
+            jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(bookCategoryService.bookCategoryInCombo().toArray()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
     public void saveBookCategory(){
-        String code=jTextField8.getText();
-        String name=jTextField9.getText();
-        BookCategory bCategory=new BookCategory();
-        bCategory.setCode(code);
-        bCategory.setName(name);
-        
-        bCateDao.saveBook(bCategory);
-        JOptionPane.showMessageDialog(null,"Book Category inserted !");
-        clearBookCategoryTable();
-        allBooksCAtegory();
-        jTextField8.setText("");
-        jTextField9.setText("");
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookCategory bookCategoryService = (IBookCategory) register.lookup("bookCategoryService");
+            String code=jTextField8.getText();
+            String name=jTextField9.getText();
+            BookCategory bCategory=new BookCategory();
+            bCategory.setCode(code);
+            bCategory.setName(name);
+
+            bookCategoryService.save(bCategory);
+            JOptionPane.showMessageDialog(null,"Book Category inserted !");
+            clearBookCategoryTable();
+            allBooksCAtegory();
+            jTextField8.setText("");
+            jTextField9.setText("");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
                 
     }
     public void updateBookCategory(){
-        String code = jTextField8.getText();
-        String name = jTextField9.getText();
-        BookCategory bCategory = new BookCategory();
-        bCategory.setCode(code);
-        bCategory.setName(name);
-        bCateDao.updateBook(bCategory);
-        JOptionPane.showMessageDialog(null,"book Category Modified!!");
-        clearBookCategoryTable();
-        allBooksCAtegory();
-        jTextField8.setText("");
-        jTextField9.setText("");
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookCategory bookCategoryService = (IBookCategory) register.lookup("bookCategoryService");
+            String code = jTextField8.getText();
+            String name = jTextField9.getText();
+            BookCategory bCategory = new BookCategory();
+            bCategory.setCode(code);
+            bCategory.setName(name);
+            bookCategoryService.update(bCategory);
+            JOptionPane.showMessageDialog(null,"book Category Modified!!");
+            clearBookCategoryTable();
+            allBooksCAtegory();
+            jTextField8.setText("");
+            jTextField9.setText("");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -507,15 +555,12 @@ public class BookTabbedPane extends javax.swing.JInternalFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         updateBook();
-//        clearBookTable();
-//        allBooks();
+
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         saveBook();
-//        clearBookTable();
-//        allBooks();
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -526,8 +571,6 @@ public class BookTabbedPane extends javax.swing.JInternalFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
         saveBookCategory();
-//        clearBookCategoryTable();
-//        allBooksCAtegory();
         populateCombo();
         jTextField8.requestFocusInWindow();
 
@@ -551,18 +594,24 @@ public class BookTabbedPane extends javax.swing.JInternalFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        String id=jTextField1.getText();
-        //removing the book with the passed id
-        bDao.deleteBook(id);
-        clearBookTable();
-        allBooks();
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBook bookService = (IBook) register.lookup("bookService");
+            String id=jTextField1.getText();
+            //removing the book with the passed id
+            bookService.delete(id);
+            clearBookTable();
+            allBooks();
+            
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
         updateBookCategory();
-//        clearBookCategoryTable();
-//        allBooksCAtegory();
         populateCombo();
         jTextField8.requestFocusInWindow();
 
@@ -571,19 +620,26 @@ public class BookTabbedPane extends javax.swing.JInternalFrame {
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
-        String code=jTextField8.getText().trim();
-        bCateDao.deleteBook(code);
-        JOptionPane.showMessageDialog(null,"Deleted one Book !!");
-        clearBookCategoryTable();
-        allBooksCAtegory();
-        populateCombo();
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
-        jTextField4.setText("");
-        jTextField5.setText("");
-        jTextField6.setText("");
-        jTextField7.setText("");
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookCategory bookCategoryService = (IBookCategory) register.lookup("bookCategoryService");
+            String code=jTextField8.getText().trim();
+            bookCategoryService.delete(code);
+            JOptionPane.showMessageDialog(null,"Deleted one Book !!");
+            clearBookCategoryTable();
+            allBooksCAtegory();
+            populateCombo();
+            jTextField1.setText("");
+            jTextField2.setText("");
+            jTextField3.setText("");
+            jTextField4.setText("");
+            jTextField5.setText("");
+            jTextField6.setText("");
+            jTextField7.setText("");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         
     }//GEN-LAST:event_jButton6ActionPerformed
 

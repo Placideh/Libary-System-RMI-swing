@@ -5,7 +5,6 @@
  */
 package internalFrames;
 
-import dao.BookTransactionDao;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.time.LocalDate;
@@ -23,7 +22,6 @@ import model.TransactionType;
  */
 public class BookTransactForm extends javax.swing.JInternalFrame {
 
-        BookTransactionDao bookTransactionDao = new BookTransactionDao();
         DefaultTableModel model;
         DefaultComboBoxModel comboModel;
         TransactionType transtype=null;
@@ -134,13 +132,33 @@ public class BookTransactForm extends javax.swing.JInternalFrame {
         }
     }
     public void populateFirstNameCombo(){
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(bookTransactionDao.getFirstNameInCombo().toArray()));
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookTransaction bookTransactionService = (IBookTransaction) register.lookup("bookTransactionService");
+            jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(bookTransactionService.getFirstNamesInCombo().toArray()));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public void populateLastNameCombo(){
-        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel(bookTransactionDao.getLastNameInCombo().toArray()));
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookTransaction bookTransactionService = (IBookTransaction) register.lookup("bookTransactionService");
+            jComboBox4.setModel(new javax.swing.DefaultComboBoxModel(bookTransactionService.getLastNameInCombo().toArray()));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public void populateBookNameCombo(){
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel(bookTransactionDao.getBookNameInCombo().toArray()));
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookTransaction bookTransactionService = (IBookTransaction) register.lookup("bookTransactionService");
+            jComboBox3.setModel(new javax.swing.DefaultComboBoxModel(bookTransactionService.getBookNameInCombo().toArray()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
 
@@ -284,10 +302,17 @@ public class BookTransactForm extends javax.swing.JInternalFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-         transtype = (TransactionType) jComboBox1.getSelectedItem();
-         BookTransaction bk=new BookTransaction();
-         bk.setTransType(transtype.toString());
-        bookTransactionDao.deleteTransaction(bk);
+        try {
+            Registry register = LocateRegistry.getRegistry("127.0.0.1", 21172);
+            IBookTransaction bookTransactionService = (IBookTransaction) register.lookup("bookTransactionService");
+             transtype = (TransactionType) jComboBox1.getSelectedItem();
+             BookTransaction bk=new BookTransaction();
+             bk.setTransType(transtype.toString());
+            bookTransactionService.delete(bk);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked

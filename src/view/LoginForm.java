@@ -6,7 +6,10 @@
 package view;
 
 import dao.LoginDao;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import javax.swing.JOptionPane;
+import library.serviceInterface.ILogin;
 import model.Login;
 
 /**
@@ -111,27 +114,33 @@ public class LoginForm extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        LoginDao loginDao=new LoginDao();
-        String username=jTextField1.getText().trim();
-        String password=jPasswordField1.getText().trim().toLowerCase();
-        Login login =new Login(username,password);
-       
-        
-        if(loginDao.checkLogin(login)){
-        JOptionPane.showMessageDialog(null,"you are logged in !!");
-        jTextField1.setText("");
-        jPasswordField1.setText("");
-        jTextField1.requestFocusInWindow();
+        try {
+            Registry register=LocateRegistry.getRegistry("127.0.0.1", 21172);
+            ILogin loginService=(ILogin) register.lookup("loginService");
+            String username=jTextField1.getText().trim();
+            String password=jPasswordField1.getText().trim().toLowerCase();
+            Login login =new Login(username,password);
 
-        MainLibrayForm mainForm =new MainLibrayForm();
-        mainForm.setVisible(true);
-        
-            
-        }else{
-            JOptionPane.showMessageDialog(null, "Username  or Password error!!");
+
+            if(loginService.checkLogin(login)){
+            JOptionPane.showMessageDialog(null,"you are logged in !!");
             jTextField1.setText("");
             jPasswordField1.setText("");
             jTextField1.requestFocusInWindow();
+
+            MainLibrayForm mainForm =new MainLibrayForm();
+            mainForm.setVisible(true);
+
+
+            }else{
+                JOptionPane.showMessageDialog(null, "Username  or Password error!!");
+                jTextField1.setText("");
+                jPasswordField1.setText("");
+                jTextField1.requestFocusInWindow();
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
